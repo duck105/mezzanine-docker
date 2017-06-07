@@ -1,5 +1,12 @@
 version: '2'
 services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code:z
+    ports:
+      - "8000:8000"
   db:
     image: mariadb
     environment:
@@ -9,10 +16,3 @@ services:
       - MYSQL_PASSWORD=onepwd
     volumes:
       - ./datavolume:/var/lib/mysql:z
-  web:
-    build: .
-    command: python ./manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code:z
-    ports:
-      - "8000:8000"
