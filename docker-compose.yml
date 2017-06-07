@@ -1,0 +1,18 @@
+version: '2'
+services:
+  db:
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD="examplepass"
+      - MYSQL_DATABASE=demodb
+      - MYSQL_USER=one
+      - MYSQL_PASSWORD=onepwd
+    volumes:
+      - ./datavolume:/var/lib/mysql:z
+  web:
+    build: .
+    command: python ./manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code:z
+    ports:
+      - "8000:8000"
