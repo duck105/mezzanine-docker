@@ -18,6 +18,8 @@ services:
       - .:/code:z
     expose:
       - "8000"
+    depends_on:
+      - db
   nginx:
     restart: always
     build: ./nginx
