@@ -30,3 +30,6 @@ Just stop the process and run `docker-compose up`  again
 
 4. Exit the container
    * `CONTAINER_NAME$> exit`
+
+## Structure
+ ![image](https://github.com/duck105/mezzanine-docker/raw/master/structure.jpeg)
