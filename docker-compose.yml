@@ -1,15 +1,34 @@
 version: '2'
 services:
-  db:
+  master:
     restart: always
-    image: mariadb
+    build: ./db
+    ports:
+      - 3306:3306
     environment:
-      - MYSQL_ROOT_PASSWORD="examplepass"
+      - MYSQL_ROOT_PASSWORD=examplepass
       - MYSQL_DATABASE=demodb
       - MYSQL_USER=one
       - MYSQL_PASSWORD=onepwd
+      - MYSQL_REPLICA_USER=replica
+      - MYSQL_REPLICA_PASS=replica_Passw0rd
     volumes:
       - ./datavolume:/var/lib/mysql:z
+    command: ["mysqld", "--log-bin=mysql-bin", "--server-id=1"]
+  slave:
+    build: ./db
+    restart: always
+    ports:
+      - '3307:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=examplepass
+      - MYSQL_USER=one
+      - MYSQL_PASSWORD=onepwd
+      - MYSQL_REPLICA_USER=replica
+      - MYSQL_REPLICA_PASS=replica_Passw0rd
+      - MYSQL_MASTER_SERVER=master
+      - MYSQL_MASTER_WAIT_TIME=10
+    command: ["mysqld", "--log-bin=mysql-bin", "--server-id=2"]
   web:
     restart: always
     build: .
@@ -19,7 +38,7 @@ services:
     expose:
       - "8000"
     depends_on:
-      - db
+      - master
   nginx:
     restart: always
     build: ./nginx
