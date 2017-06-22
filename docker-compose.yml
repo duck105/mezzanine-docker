@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   db:
     restart: always
@@ -9,25 +9,25 @@ services:
       - MYSQL_USER=one
       - MYSQL_PASSWORD=onepwd
     volumes:
-      - ./datavolume:/var/lib/mysql:z
+      - ./datavolume:/var/lib/mysql
   web:
     restart: always
+    image: mezzaninedocker_web
     build: .
     command: python ./manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/code:z
-    expose:
-      - "8000"
+      - .:/code
     depends_on:
       - db
   nginx:
     restart: always
+    image: mezzaninedocker_nginx
     build: ./nginx
     ports:
       - "80:80"
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:z
-    volumes_from:
-      - web
+      - /var/run/docker.sock:/tmp/docker.sock
     links:
       - web:web
+    deploy:
+      mode: global
