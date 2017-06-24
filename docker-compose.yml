@@ -1,31 +1,30 @@
-version: '2'
+version: '3'
 services:
   slave:
     build: ./db
-    restart: always
+    image: mezzaninedocker_slaves
     ports:
       - '3306:3306'
     volumes:
-      - ./db/conf:/etc/mysql/conf.d:z
+      - ./db/conf:/etc/mysql/conf.d
+      - ./datavolume:/var/lib/mysql
     env_file: ./db/db.env
+    deploy:
+      mode: global
   web:
-    restart: always
     build: .
+    image: mezzaninedocker_web
     command: python ./manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/code:z
-    expose:
-      - "8000"
+      - .:/code
     depends_on:
       - slave
   nginx:
-    restart: always
     build: ./nginx
+    image: mezzaninedocker_nginx 
     ports:
       - "80:80"
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:z
-    volumes_from:
-      - web
+      - /var/run/docker.sock:/tmp/docker.sock
     links:
       - web:web

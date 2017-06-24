@@ -25,8 +25,8 @@ DATABASES = {
     "docker:maria":{
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'demodb',
-        'USER': 'one',
-        'PASSWORD': 'onepwd',
+        'USER': 'root',
+        'PASSWORD': 'examplepass',
         'HOST': 'slave',
         'PORT': 3306
     }
