@@ -27,7 +27,7 @@ DATABASES = {
         'NAME': 'demodb',
         'USER': 'one',
         'PASSWORD': 'onepwd',
-        'HOST': 'master',
+        'HOST': 'slave',
         'PORT': 3306
     }
 }
