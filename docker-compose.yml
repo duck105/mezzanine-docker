@@ -17,16 +17,18 @@ services:
     command: python ./manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
+      - ./static:/static
     depends_on:
       - db
   nginx:
     restart: always
-    image: mezzaninedocker_nginx
-    build: ./nginx
+    image: nginx:latest
     ports:
       - "80:80"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock
+      - ./static:/static
+      - ./nginx/config:/etc/nginx/conf.d
     links:
       - web:web
     deploy:
