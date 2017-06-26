@@ -2,21 +2,29 @@ version: '3'
 services:
   slave:
     build: ./db
-    image: mezzaninedocker_slaves
     ports:
       - '3306:3306'
     volumes:
-      - ./db/conf:/etc/mysql/conf.d
       - ./datavolume:/var/lib/mysql
-    env_file: ./db/db.env
-    deploy:
-      mode: global
+    environment:
+      - MYSQL_ROOT_PASSWORD=examplepass
+      - MYSQL_DATABASE=demodb
+      - MYSQL_REPLICA_USER=replica
+      - MYSQL_REPLICA_PASS=replica_Passw0rd
+      - MYSQL_MASTER_WAIT_TIME=10
+    
+    # - MYSQL_MASTER_SERVER=[master's ip]
+      - MYSQL_MASTER_SERVER=172.16.217.140
+
+    # every slave need to have different server-id
+    command: ["mysqld", "--log-bin=mysql-bin", "--server-id=2"]
   web:
     build: .
     image: mezzaninedocker_web
     command: python ./manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
+      - ./static:/static
     depends_on:
       - slave
   nginx:
@@ -26,5 +34,7 @@ services:
       - "80:80"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock
+      - ./static:/static
+      - ./nginx/config:/etc/nginx/conf.d
     links:
       - web:web
