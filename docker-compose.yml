@@ -1,33 +1,31 @@
-version: '2'
+version: '3'
 services:
   db:
-    restart: always
     image: mariadb
     environment:
-      - MYSQL_ROOT_PASSWORD="examplepass"
+      - MYSQL_ROOT_PASSWORD=examplepass
       - MYSQL_DATABASE=demodb
-      - MYSQL_USER=one
-      - MYSQL_PASSWORD=onepwd
+      - MYSQL_REPLICA_USER=replica
+      - MYSQL_REPLICA_PASS=replica_Passw0rd
     volumes:
-      - ./datavolume:/var/lib/mysql:z
+      - ./datavolume:/var/lib/mysql
+      - ./db/conf:/etc/mysql/conf.d
+      - ./db/replica:/docker-entrypoint-initdb.d/
   web:
-    restart: always
+    image: mezzaninedocker_web
     build: .
     command: python ./manage.py runserver 0.0.0.0:8000
     volumes:
-      - .:/code:z
-    expose:
-      - "8000"
+      - .:/code
+      - ./static:/static
     depends_on:
       - db
   nginx:
-    restart: always
-    build: ./nginx
+    image: nginx:latest
     ports:
       - "80:80"
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:z
-    volumes_from:
-      - web
-    links:
-      - web:web
+      - /var/run/docker.sock:/tmp/docker.sock
+      - ./static:/static
+      - ./nginx/config:/etc/nginx/conf.d
+
